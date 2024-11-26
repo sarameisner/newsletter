@@ -1,8 +1,19 @@
-"use client";
+import { postSub } from "@/lib/api";
+import { revalidatePath } from "next/cache";
 
-export default function Newsletter() {
+async function Newsletter() {
+  async function send(formData) {
+    "use server";
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+    };
+    await postSub(data);
+    revalidatePath("/api");
+  }
+
   return (
-    <form className="max-w-md mx-auto p-4 bg-white shadow-md rounded">
+    <form action={send} className="max-w-md mx-auto p-4 bg-white shadow-md rounded">
       <div className="mb-4">
         <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
           Name
@@ -23,3 +34,5 @@ export default function Newsletter() {
     </form>
   );
 }
+
+export default Newsletter;
